@@ -1,12 +1,14 @@
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import render, redirect
+from django.db.models import Sum, Max, Min, Count, Avg
 from .models import Product, Category
-from .serializers import ProductSerializer, ProductCreateSerializer, CategorySerializer, ProductDetailSerializer
+from .serializers import ProductSerializer, ProductCreateSerializer, CategorySerializer, ProductDetailSerializer, CategoryAggregateSerializer
 
 
 def show_products(request):
@@ -59,3 +61,24 @@ class CategoryDetailGenericApiView(GenericAPIView, RetrieveModelMixin, UpdateMod
 
     def delete(self, request, pk):
         return self.destroy(request)
+
+
+class CategoryViewSet(ModelViewSet):
+    queryset = Category.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = CategorySerializer
+    serializers = {
+        'get_statistics': CategoryAggregateSerializer,
+    }
+
+    def get_statistics(self, request):
+        queryset = self.get_queryset()
+        queryset = queryset.aggregate(
+            count=Count('id'),
+            sum=Sum('product__price'),
+            avg=Avg('product__price'),
+            max=Max('product__price'),
+            min=Min('product__price'),
+        )
+        serializer =self.serializers[self.action](queryset)
+        return Response(status=status.HTTP_200_OK, data=serializer.data)

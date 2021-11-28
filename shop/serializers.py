@@ -40,3 +40,11 @@ class ProductDetailSerializer(serializers.Serializer):
     description = serializers.CharField()
     created_at = serializers.DateTimeField()
     category = CategorySerializer()
+
+
+class CategoryAggregateSerializer(serializers.Serializer):
+    count = serializers.IntegerField()
+    sum = serializers.IntegerField()
+    avg = serializers.FloatField()
+    max = serializers.IntegerField()
+    min = serializers.IntegerField()

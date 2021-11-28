@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import render, redirect
 from .models import Product, Category
-from .serializers import ProductSerializer, ProductCreateSerializer, CategorySerializer
+from .serializers import ProductSerializer, ProductCreateSerializer, CategorySerializer, ProductDetailSerializer
 
 
 def show_products(request):
@@ -23,6 +23,7 @@ class ProductApiView(APIView):
     def get(self, request):
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
+        # serializer = ProductDetailSerializer(products, many=True)
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
     def post(self, request):

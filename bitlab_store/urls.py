@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .swagger import urlpatterns as swagger_urls
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,3 +25,5 @@ urlpatterns = [
     path('refresh/', TokenRefreshView.as_view()),
     path('shop/', include('shop.urls')),
 ]
+
+urlpatterns += swagger_urls

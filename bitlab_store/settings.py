@@ -41,12 +41,24 @@ INSTALLED_APPS = [
     'shop',
     'rest_framework',
     'rest_framework_simplejwt',
+    'drf_yasg',
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
+}
+
+SWAGGER_SETTINGS = {
+    "USE_SESSION_AUTH": False,
+    "SECURITY_DEFINITIONS": {
+        "api_key": {
+            "type": 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
 }
 
 MIDDLEWARE = [

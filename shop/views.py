@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import render, redirect
@@ -65,7 +65,7 @@ class CategoryDetailGenericApiView(GenericAPIView, RetrieveModelMixin, UpdateMod
 
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = CategorySerializer
     serializers = {
         'get_statistics': CategoryAggregateSerializer,

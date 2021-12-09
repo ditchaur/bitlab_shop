@@ -10,6 +10,7 @@ from django.db.models import Sum, Max, Min, Count, Avg
 from .models import Product, Category
 from .serializers import ProductSerializer, ProductCreateSerializer, CategorySerializer, ProductDetailSerializer, CategoryAggregateSerializer
 from .permissions import AdminPermission, ClientPermission
+from .tasks import send_email
 
 
 def show_products(request):
@@ -82,4 +83,5 @@ class CategoryViewSet(ModelViewSet):
             min=Min('product__price'),
         )
         serializer =self.serializers[self.action](queryset)
+        send_email.delay('test_email@gmai.com', **serializer.data)
         return Response(status=status.HTTP_200_OK, data=serializer.data)

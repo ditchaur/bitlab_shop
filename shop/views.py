@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect
 from django.db.models import Sum, Max, Min, Count, Avg
 from .models import Product, Category
 from .serializers import ProductSerializer, ProductCreateSerializer, CategorySerializer, ProductDetailSerializer, CategoryAggregateSerializer
+from .permissions import AdminPermission, ClientPermission
 
 
 def show_products(request):
@@ -20,7 +21,7 @@ def show_products(request):
 
 
 class ProductApiView(APIView):
-    permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticated, ClientPermission)
 
     def get(self, request):
         products = Product.objects.all()
@@ -65,7 +66,7 @@ class CategoryDetailGenericApiView(GenericAPIView, RetrieveModelMixin, UpdateMod
 
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, AdminPermission)
     serializer_class = CategorySerializer
     serializers = {
         'get_statistics': CategoryAggregateSerializer,

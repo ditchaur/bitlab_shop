@@ -1,0 +1,54 @@
+version: "3.7"
+
+volumes:
+  postgres_data: {}
+
+services:
+  postgres:
+    container_name: "postgres_bitlab"
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - common
+
+  redis:
+    container_name: "redis_bitlab"
+    image: redis:alpine
+    ports:
+      - "6379:6379" # слева порт хоста (физ машины), справа порт внутри контейнера
+    networks:
+      - common
+
+  django:
+    container_name: "django_bitlab"
+    build: .
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./src:/src:rw
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    networks:
+      - common
+
+  celery:
+    container_name: "celery_bitlab"
+    build: .
+    command: celery -A bitlab_store worker --loglevel=info
+    depends_on:
+      - redis
+    networks:
+      - common
+
+
+networks:
+  common:
+    name: common
